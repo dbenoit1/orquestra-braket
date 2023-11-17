@@ -53,7 +53,6 @@ class BraketRunner(BaseCircuitRunner):
 
         if self.s3_destination_folder is not None:
             resultqpu = self.device.run(braket_circuit, self.s3_destination_folder, shots=n_samples).result()
-            print(resultqpu)
             return Measurements.from_counts(resultqpu.measurement_counts) 
             #return self.device.run(
             #    braket_circuit, self.s3_destination_folder, shots=n_samples
