@@ -52,9 +52,11 @@ class BraketRunner(BaseCircuitRunner):
             braket_circuit.apply_gate_noise(self.noise_model)
 
         if self.s3_destination_folder is not None:
-            return self.device.run(
-                braket_circuit, self.s3_destination_folder, shots=n_samples
-            )
+            result = self.device.run(braket_circuit, self.s3_destination_folder, shots=n_samples).result()
+            return Measurements.from_counts(result.measurement_counts) 
+            #return self.device.run(
+            #    braket_circuit, self.s3_destination_folder, shots=n_samples
+            #)
 
         result = self.device.run(braket_circuit, shots=n_samples).result()
         return Measurements.from_counts(result.measurement_counts)
