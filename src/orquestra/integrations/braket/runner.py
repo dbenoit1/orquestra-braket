@@ -1,4 +1,4 @@
-from typing import List, Optional, Tuple, Type, Union
+from typing import List, Optional, Tuple, Type, Union, Sequence
 
 from boto3 import Session  # type: ignore
 from braket.aws import AwsDevice, AwsDeviceType, AwsSession
