@@ -67,7 +67,7 @@ class BraketRunner(BaseCircuitRunner):
         ]
 
         new_circuits, new_n_samples, multiplicities = expand_sample_sizes(
-            circuits_to_execute, samples_per_circuit, self.device.default_shots()
+            circuits_to_execute, samples_per_circuit, self.device.properties.default_shots
         )
 
         batch_size = getattr(self.device, "max_parallel", len(circuits_to_execute))
