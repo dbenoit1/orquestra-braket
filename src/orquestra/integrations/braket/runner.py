@@ -77,7 +77,7 @@ class BraketRunner(BaseCircuitRunner):
 
         batches = split_into_batches(new_circuits, new_n_samples, batch_size)        
 
-        for circuits, n_samples in batches
+        for circuits, n_samples in batches:
             print(circuits)
             print(n_samples)
             print(list(circuits))
