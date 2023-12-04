@@ -66,11 +66,13 @@ class BraketRunner(BaseCircuitRunner):
             export_to_braket(circuit) for circuit in batch
         ]
 
-        new_circuits, new_n_samples, multiplicities = expand_sample_sizes(
-            circuits_to_execute, samples_per_circuit, self.device.properties.default_shots
+        new_circuits, new_n_samples = expand_sample_sizes(
+            circuits_to_execute, samples_per_circuit
         )
 
-        batch_size = getattr(self.device, "max_parallel", len(circuits_to_execute))
+        #hardwired for now 10 and 1
+        batch_size = 10
+        multiplicities=1
 
         batches = split_into_batches(new_circuits, new_n_samples, batch_size)
 
