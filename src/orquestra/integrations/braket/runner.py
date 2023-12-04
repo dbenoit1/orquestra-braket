@@ -61,7 +61,7 @@ class BraketRunner(BaseCircuitRunner):
         result = self.device.run(braket_circuit, shots=n_samples).result()
         return Measurements.from_counts(result.measurement_counts)
 
-   def _run_batch_and_measure(self, batch: Sequence[Circuit], samples_per_circuit: Sequence[int]):
+    def _run_batch_and_measure(self, batch: Sequence[Circuit], samples_per_circuit: Sequence[int]):
         circuits_to_execute = [
             export_to_braket(circuit) for circuit in batch
         ]
