@@ -5,7 +5,7 @@ from braket.aws import AwsDevice, AwsDeviceType, AwsSession
 from braket.circuits import Noise
 from braket.devices import Device, LocalSimulator
 from orquestra.quantum.api.circuit_runner import BaseCircuitRunner
-from orquestra.quantum.circuits import Circuit
+from orquestra.quantum.circuits import Circuit,combine_bitstrings,expand_sample_sizes,split_into_batches
 from orquestra.quantum.measurements import Measurements
 
 from orquestra.integrations.braket._utils import _get_arn
@@ -61,6 +61,50 @@ class BraketRunner(BaseCircuitRunner):
         result = self.device.run(braket_circuit, shots=n_samples).result()
         return Measurements.from_counts(result.measurement_counts)
 
+   def _run_batch_and_measure(self, batch: Sequence[Circuit], samples_per_circuit: Sequence[int]):
+        circuits_to_execute = [
+            export_to_braket(circuit) for circuit in batch
+        ]
+
+        new_circuits, new_n_samples, multiplicities = expand_sample_sizes(
+            circuits_to_execute, samples_per_circuit, self.device.maximum_shots()
+        )
+
+        batch_size = getattr(self.device, "maximum_experiments", len(circuits_to_execute))
+
+        batches = split_into_batches(new_circuits, new_n_samples, batch_size)
+
+        jobs = [
+            self.device.run(
+            list(circuits),
+            self.s3_destination_folder, 
+            shots=n_samples,
+            )
+            for circuits, n_samples in batches
+        ]
+
+    # Braket runners return a list of results, even when there was only one experiment.
+    # To simplify logic, we make sure to always have a list of counts from a job.
+
+        all_bitstrings = [
+            result.measurement_counts
+            for job in jobs
+            for result in job.result()
+        ]
+
+        combined_bitstrings = combine_bitstrings(all_bitstrings, multiplicities)
+        print(combined_bitstrings)
+
+        if self.discard_extra_measurements:
+            combined_bitstrings = [
+                bitstrings[:n_samples]
+                for bitstrings, n_samples in zip(combined_bitstrings, samples_per_circuit)
+            ]
+
+        return [
+            Measurements([tuple(map(int, b[::-1])) for b in bitstrings])
+            for bitstrings in combined_bitstrings
+        ]
 
 def braket_local_runner(
     backend: Optional[str] = None, noise_model: Optional[Type[Noise]] = None
