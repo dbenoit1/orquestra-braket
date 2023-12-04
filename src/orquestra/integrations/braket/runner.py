@@ -77,14 +77,18 @@ class BraketRunner(BaseCircuitRunner):
 
         batches = split_into_batches(new_circuits, new_n_samples, batch_size)        
 
-        print(batches)
+        for circuits, n_samples in batches
+            print(circuits)
+            print(n_samples)
+            print(list(circuits))
+            print("---------")
+            
         jobs = [
             self.device.run(
             circuits,
             #list(circuits),
             self.s3_destination_folder, 
-            shots=n_samples,
-            )
+            shots=n_samples)
             for circuits, n_samples in batches
         ]
 
