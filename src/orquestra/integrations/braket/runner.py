@@ -66,15 +66,16 @@ class BraketRunner(BaseCircuitRunner):
             export_to_braket(circuit) for circuit in batch
         ]
 
-        new_circuits, new_n_samples = expand_sample_sizes(
-            circuits_to_execute, samples_per_circuit
+        #hardwired for max shots to 1024 for now (should be something like self.backend.configuration().max_shots)
+        new_circuits, new_n_samples, multiplicities = expand_sample_sizes(
+            circuits_to_execute, samples_per_circuit,1024,
         )
 
-        #hardwired for now 10 and 1
+        #hardwired for now 10 
         batch_size = 10
-        multiplicities=1
+        #batch_size = getattr(self.backend.configuration(), "max_experiments", len(circuits_to_execute))
 
-        batches = split_into_batches(new_circuits, new_n_samples, batch_size)
+        batches = split_into_batches(new_circuits, new_n_samples, batch_size)        
 
         jobs = [
             self.device.run(
