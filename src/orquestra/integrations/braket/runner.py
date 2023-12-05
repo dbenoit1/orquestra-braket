@@ -84,7 +84,7 @@ class BraketRunner(BaseCircuitRunner):
         batches = split_into_batches(new_circuits, new_n_samples, batch_size)        
 
         #storage for the bitstrings and measurements from counts
-        all_bitstrings=[]
+        #all_bitstrings=[]
         all_measurements=[]
      
         #start running through the circuits and gather counts
@@ -98,11 +98,12 @@ class BraketRunner(BaseCircuitRunner):
             mycounts=myresult.measurement_counts
 
             #save into all_bitstrings
-            all_bitstrings.append(mycounts)
+            #all_bitstrings.append(mycounts)
+            print(mycounts)
             all_measurements.append(Measurements.from_counts(mycounts))
         
-        #print(all_bitstrings)
-        return(all_measurements)
+       # print(all_bitstrings)
+        return all_measurements
 
 def braket_local_runner(
     backend: Optional[str] = None, noise_model: Optional[Type[Noise]] = None
