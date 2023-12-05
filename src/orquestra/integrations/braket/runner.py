@@ -115,7 +115,13 @@ class BraketRunner(BaseCircuitRunner):
         combined_bitstrings = combine_bitstrings(all_bitstrings, multiplicities)
         print("COMBI:")
         print(combined_bitstrings)
+        print("result")
+        uuu=[
+            Measurements([tuple(map(int, b[::-1])) for b in bitstrings])
+            for bitstrings in combined_bitstrings
+        ]
 
+        print(uuu)
         return [
             Measurements([tuple(map(int, b[::-1])) for b in bitstrings])
             for bitstrings in combined_bitstrings
