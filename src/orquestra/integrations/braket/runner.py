@@ -83,19 +83,19 @@ class BraketRunner(BaseCircuitRunner):
             print(list(circuits))
             print("---------")
             
-        jobs = [
-            self.device.run(
-            circuits,
-            #list(circuits),
-            self.s3_destination_folder, 
-            shots=n_samples)
-            for circuits, n_samples in batches
-        ]
+      #  jobs = [
+      #      self.device.run(
+      #      circuits,
+      #      #list(circuits),
+      #      self.s3_destination_folder, 
+      #      shots=n_samples)
+      #      for circuits, n_samples in batches
+      #  ]
 
         #simpler here? 
         all_bitstrings=[]
-        for job in jobs:
-            myresult=job.result()
+        for mycircuit, n_samples in batches:
+            myresult = self.device.run(mycircuit, self.s3_destination_folder, shots=n_samples).result()
             mycounts=myresult.measurement_counts
             print(mycounts)
             all_bitstrings.append(mycounts)
