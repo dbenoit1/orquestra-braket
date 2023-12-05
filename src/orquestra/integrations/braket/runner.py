@@ -63,50 +63,55 @@ class BraketRunner(BaseCircuitRunner):
         return Measurements.from_counts(result.measurement_counts)
 
     def _run_batch_and_measure(self, batch: Sequence[Circuit], samples_per_circuit: Sequence[int]):
+        
+        #first convert circuits to list of braket circuits
         circuits_to_execute = [
             export_to_braket(circuit) for circuit in batch
         ]
-        print("batch:")
-        print(batch)
-        print("exported:")
-        print(circuits_to_execute)
             
         #hardwired for max shots to 1024 for now (should be something like self.backend.configuration().max_shots)
         new_circuits, new_n_samples, multiplicities = expand_sample_sizes(
             circuits_to_execute, samples_per_circuit,1024,
         )
 
-        #hardwired for now to 1 circuit at a time
+        #hardwired for now to run only 1 circuit at a time
         batch_size = 1
+        #could be something like: 
         #batch_size = getattr(self.backend.configuration(), "max_experiments", len(circuits_to_execute))
+        #but unsure how to access the equivalent data on AWSDevices...
 
+        #generate batches
         batches = split_into_batches(new_circuits, new_n_samples, batch_size)        
 
+        #storage for the bitstring counts
         all_bitstrings=[]
-        print("---------")
+
+        #simple run and collect here but could use list comprehension like in qiskit version:
+        #  jobs = [
+        #      self.device.run(
+        #      circuits[0],
+        #      self.s3_destination_folder, 
+        #      shots=n_samples)
+        #      for circuits, n_samples in batches
+        #  ]
+        
+        #start running through the circuits and gather counts
         for mycircuit, n_samples in batches:
-            print(mycircuit)
             print(n_samples)
             print(mycircuit[0])
             print("---------")
             
-      #  jobs = [
-      #      self.device.run(
-      #      circuits,
-      #      #list(circuits),
-      #      self.s3_destination_folder, 
-      #      shots=n_samples)
-      #      for circuits, n_samples in batches
-      #  ]
-
-        #simpler here? 
+            #run circuit           
             myresult = self.device.run(mycircuit[0], self.s3_destination_folder, shots=n_samples).result()
+            #extract counts from results
             mycounts=myresult.measurement_counts
             print(mycounts)
+            #save into all_bitstrings
             all_bitstrings.append(mycounts)
 
         print(all_bitstrings)
-        
+
+        #combine bitstrings? 
         combined_bitstrings = combine_bitstrings(all_bitstrings, multiplicities)
         print(combined_bitstrings)
 
