@@ -96,9 +96,8 @@ class BraketRunner(BaseCircuitRunner):
     # To simplify logic, we make sure to always have a list of counts from a job.
 
         all_bitstrings = [
-            result.measurement_counts
+            job.result().measurement_counts
             for job in jobs
-            for result in job.result()
         ]
 
         print(all_bitstrings)
