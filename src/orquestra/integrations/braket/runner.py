@@ -101,6 +101,8 @@ class BraketRunner(BaseCircuitRunner):
             for result in job.result()
         ]
 
+        print(all_bitstrings)
+        
         combined_bitstrings = combine_bitstrings(all_bitstrings, multiplicities)
         print(combined_bitstrings)
 
