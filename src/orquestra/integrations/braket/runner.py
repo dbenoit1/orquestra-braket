@@ -85,6 +85,7 @@ class BraketRunner(BaseCircuitRunner):
 
         #storage for the bitstring counts
         all_bitstrings=[]
+        all_data=[]
 
         #simple run and collect here but could use list comprehension like in qiskit version:
         #  jobs = [
@@ -107,25 +108,24 @@ class BraketRunner(BaseCircuitRunner):
             mycounts=myresult.measurement_counts
             print(mycounts)
             #save into all_bitstrings
-            all_bitstrings.append(list(mycounts.items()))
-
+            all_bitstrings.append(mycounts)
+            all_data.append(Measurements.from_counts(mycounts))
+        
         print(all_bitstrings)
 
         #combine bitstrings? 
-        combined_bitstrings = combine_bitstrings(all_bitstrings, multiplicities)
-        print("COMBI:")
-        print(combined_bitstrings)
-        print("result")
-        uuu=[
-            Measurements([tuple(map(int, b[::-1])) for b in bitstrings])
-            for bitstrings in combined_bitstrings
-        ]
-
-        print(uuu)
-        return [
-            Measurements([tuple(map(int, b[::-1])) for b in bitstrings])
-            for bitstrings in combined_bitstrings
-        ]
+        #combined_bitstrings = combine_bitstrings(all_bitstrings, multiplicities)
+        #print("COMBI:")
+        #print(combined_bitstrings)
+        #print("result")
+    
+        
+       
+        #return [
+        #    Measurements([tuple(map(int, b[::-1])) for b in bitstrings])
+        #    for bitstrings in combined_bitstrings
+        #]
+        return(all_data)
 
 def braket_local_runner(
     backend: Optional[str] = None, noise_model: Optional[Type[Noise]] = None
