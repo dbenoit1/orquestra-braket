@@ -83,49 +83,28 @@ class BraketRunner(BaseCircuitRunner):
         #generate batches
         batches = split_into_batches(new_circuits, new_n_samples, batch_size)        
 
-        #storage for the bitstring counts
+        #storage for the bitstrings and measurements from counts
         all_bitstrings=[]
-        all_data=[]
-
-        #simple run and collect here but could use list comprehension like in qiskit version:
-        #  jobs = [
-        #      self.device.run(
-        #      circuits[0],
-        #      self.s3_destination_folder, 
-        #      shots=n_samples)
-        #      for circuits, n_samples in batches
-        #  ]
-        
+        all_measurements=[]
+     
         #start running through the circuits and gather counts
         for mycircuit, n_samples in batches:
-            print(n_samples)
-            print(mycircuit[0])
-            print("---------")
+            #print(n_samples)
+            #print(mycircuit[0])
+            #print("---------")
             
             #run circuit           
             myresult = self.device.run(mycircuit[0], self.s3_destination_folder, shots=n_samples).result()
             #extract counts from results
             mycounts=myresult.measurement_counts
-            print(mycounts)
+            #print(mycounts)
             #save into all_bitstrings
             all_bitstrings.append(mycounts)
-            all_data.append(Measurements.from_counts(mycounts))
+            all_measurements.append(Measurements.from_counts(mycounts))
         
         print(all_bitstrings)
 
-        #combine bitstrings? 
-        #combined_bitstrings = combine_bitstrings(all_bitstrings, multiplicities)
-        #print("COMBI:")
-        #print(combined_bitstrings)
-        #print("result")
-    
-        
-       
-        #return [
-        #    Measurements([tuple(map(int, b[::-1])) for b in bitstrings])
-        #    for bitstrings in combined_bitstrings
-        #]
-        return(all_data)
+        return(all_measurements)
 
 def braket_local_runner(
     backend: Optional[str] = None, noise_model: Optional[Type[Noise]] = None
