@@ -68,10 +68,10 @@ class BraketRunner(BaseCircuitRunner):
         circuits_to_execute = [
             export_to_braket(circuit) for circuit in batch
         ]
-        print(len(batch))
+
         #hardwired for max shots to 1024 per circuit for now (should be something like self.backend.configuration().max_shots)
         new_circuits, new_n_samples, multiplicities = expand_sample_sizes(
-            circuits_to_execute, samples_per_circuit,1024,
+            circuits_to_execute, samples_per_circuit,1024*len(batch),
         )
 
         #hardwired for now to run only 1 circuit at a time
@@ -91,19 +91,17 @@ class BraketRunner(BaseCircuitRunner):
         for mycircuit, n_samples in batches:
             #print(n_samples)
             #print(mycircuit[0])
-            #print("---------")
             
             #run circuit           
             myresult = self.device.run(mycircuit[0], self.s3_destination_folder, shots=n_samples).result()
             #extract counts from results
             mycounts=myresult.measurement_counts
-            #print(mycounts)
+
             #save into all_bitstrings
             all_bitstrings.append(mycounts)
             all_measurements.append(Measurements.from_counts(mycounts))
         
         print(all_bitstrings)
-
         return(all_measurements)
 
 def braket_local_runner(
