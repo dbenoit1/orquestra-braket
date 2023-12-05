@@ -107,7 +107,7 @@ class BraketRunner(BaseCircuitRunner):
             mycounts=myresult.measurement_counts
             print(mycounts)
             #save into all_bitstrings
-            all_bitstrings.append(mycounts)
+            all_bitstrings.append(mycounts.items())
 
         print(all_bitstrings)
 
