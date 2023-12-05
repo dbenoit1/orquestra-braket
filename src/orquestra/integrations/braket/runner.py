@@ -113,13 +113,8 @@ class BraketRunner(BaseCircuitRunner):
 
         #combine bitstrings? 
         combined_bitstrings = combine_bitstrings(all_bitstrings, multiplicities)
+        print("COMBI:")
         print(combined_bitstrings)
-
-        if self.discard_extra_measurements:
-            combined_bitstrings = [
-                bitstrings[:n_samples]
-                for bitstrings, n_samples in zip(combined_bitstrings, samples_per_circuit)
-            ]
 
         return [
             Measurements([tuple(map(int, b[::-1])) for b in bitstrings])
