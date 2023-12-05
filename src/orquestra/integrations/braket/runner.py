@@ -88,12 +88,12 @@ class BraketRunner(BaseCircuitRunner):
         all_measurements=[]
      
         #start running through the circuits and gather counts
-        for mycircuit, n_samples in batches:
-            #print(n_samples)
-            #print(mycircuit[0])
+        for mycircuit, mysamples in batches:
+            print(mysamples)
+            print(mycircuit[0])
             
             #run circuit           
-            myresult = self.device.run(mycircuit[0], self.s3_destination_folder, shots=n_samples).result()
+            myresult = self.device.run(mycircuit[0], self.s3_destination_folder, shots=mysamples).result()
             #extract counts from results
             mycounts=myresult.measurement_counts
 
