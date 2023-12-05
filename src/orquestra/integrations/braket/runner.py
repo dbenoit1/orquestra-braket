@@ -92,13 +92,13 @@ class BraketRunner(BaseCircuitRunner):
             for circuits, n_samples in batches
         ]
 
-    # Braket runners return a list of results, even when there was only one experiment.
-    # To simplify logic, we make sure to always have a list of counts from a job.
-
-        all_bitstrings = [
-            job.result().measurement_counts
-            for job in jobs
-        ]
+        #simpler here? 
+        all_bitstrings=[]
+        for job in jobs:
+            myresult=job.result()
+            mycounts=myresult.measurement_counts
+            print(mycounts)
+            all_bitstrings.append(mycounts)
 
         print(all_bitstrings)
         
