@@ -107,7 +107,7 @@ class BraketRunner(BaseCircuitRunner):
         print("COMBI:")
         print(combined_counts)
     
-        return Measurements.from_counts(combined_counts)
+        return [Measurements.from_counts(expcount) for expcount in combined_counts]
 
 def braket_local_runner(
     backend: Optional[str] = None, noise_model: Optional[Type[Noise]] = None
