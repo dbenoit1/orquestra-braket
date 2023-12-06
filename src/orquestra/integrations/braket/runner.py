@@ -88,8 +88,8 @@ class BraketRunner(BaseCircuitRunner):
      
         #start running through the circuits and gather counts
         for mycircuit, mysamples in batches:
-            print(mysamples)
-            print(mycircuit[0])
+            #print(mysamples)
+            #print(mycircuit[0])
             
             #run circuit           
             myresult = self.device.run(mycircuit[0], self.s3_destination_folder, shots=mysamples).result()
@@ -99,13 +99,12 @@ class BraketRunner(BaseCircuitRunner):
 
             #save into all_counts
             all_counts.append(mycounts)
-            print(mycounts)
-            
+            #print(mycounts)
 
         #combine counts (useful if experiments have to be split) 
         combined_counts = combine_measurement_counts(all_counts, multiplicities)
-        print("COMBI:")
-        print(combined_counts)
+        #print("COMBI:")
+        #print(combined_counts)
     
         return [Measurements.from_counts(expcount) for expcount in combined_counts]
 
