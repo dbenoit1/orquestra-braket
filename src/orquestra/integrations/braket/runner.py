@@ -5,7 +5,7 @@ from braket.aws import AwsDevice, AwsDeviceType, AwsSession
 from braket.circuits import Noise
 from braket.devices import Device, LocalSimulator
 from orquestra.quantum.api.circuit_runner import BaseCircuitRunner
-from orquestra.quantum.circuits import Circuit,combine_bitstrings,expand_sample_sizes,split_into_batches
+from orquestra.quantum.circuits import Circuit,combine_bitstrings,expand_sample_sizes,split_into_batches, combine_measurement_counts
 from orquestra.quantum.measurements import Measurements
 
 from orquestra.integrations.braket._utils import _get_arn
@@ -84,8 +84,7 @@ class BraketRunner(BaseCircuitRunner):
         batches = split_into_batches(new_circuits, new_n_samples, batch_size)        
 
         #storage for the bitstrings and measurements from counts
-        all_bitstrings=[]
-        all_measurements=[]
+        all_counts=[]
      
         #start running through the circuits and gather counts
         for mycircuit, mysamples in batches:
@@ -94,21 +93,21 @@ class BraketRunner(BaseCircuitRunner):
             
             #run circuit           
             myresult = self.device.run(mycircuit[0], self.s3_destination_folder, shots=mysamples).result()
+            
             #extract counts from results
             mycounts=myresult.measurement_counts
 
-            #save into all_bitstrings
-            all_bitstrings.append(list(mycounts.items()))
+            #save into all_counts
+            all_counts.append(mycounts)
             print(mycounts)
-            all_measurements.append(Measurements.from_counts(mycounts))
+            
 
-        #combine bitstrings? 
-        combined_bitstrings = combine_bitstrings(all_bitstrings, multiplicities)
+        #combine counts (useful if experiments have to be split) 
+        combined_counts = combine_measurement_counts(all_counts, multiplicities)
         print("COMBI:")
-        print(combined_bitstrings)
-        
-       # print(all_bitstrings)
-        return all_measurements
+        print(combined_counts)
+    
+        return Measurements.from_counts(combined_counts)
 
 def braket_local_runner(
     backend: Optional[str] = None, noise_model: Optional[Type[Noise]] = None
